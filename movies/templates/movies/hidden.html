@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3">
+        <h2>Hidden Movies</h2>
+        <hr />
+        <p>
+          <a class="btn btn-outline-secondary" href="{% url 'movies.index' %}">Back to all movies</a>
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      {% if template_data.movies %}
+      {% for movie in template_data.movies %}
+      <div class="col-md-4 col-lg-3 mb-2">
+        <div class="p-2 card align-items-center pt-4">
+          <img src="{{ movie.image.url }}"
+            class="card-img-top rounded img-card-200">
+          <div class="card-body text-center">
+            <a href="{% url 'movies.show' id=movie.id %}"
+              class="btn bg-dark text-white">
+              {{ movie.name }}
+            </a>
+            <form method="POST" action="{% url 'movies.unhide' id=movie.id %}?next={% url 'movies.hidden' %}">
+              {% csrf_token %}
+              <button class="btn btn-outline-success mt-2" type="submit">Unhide</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="col-12">
+        <p>No hidden movies.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

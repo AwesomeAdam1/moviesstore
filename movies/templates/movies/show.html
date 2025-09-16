@@ -30,6 +30,14 @@
             </div>
           </form>
         </p>
+        {% if user.is_authenticated %}
+        <p>
+          <form method="POST" action="{% url 'movies.hide' id=template_data.movie.id %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-danger" type="submit">Hide this movie</button>
+          </form>
+        </p>
+        {% endif %}
         <h2>Reviews</h2>
         <hr />
         <ul class="list-group">

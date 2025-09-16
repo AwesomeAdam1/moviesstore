@@ -7,6 +7,11 @@
       <div class="col mx-auto mb-3">
         <h2>List of Movies</h2>
         <hr />
+        {% if user.is_authenticated %}
+        <p>
+          <a class="btn btn-outline-secondary" href="{% url 'movies.hidden' %}">View hidden movies</a>
+        </p>
+        {% endif %}
         <p class="card-text">
           <form method="GET">
             <div class="row">
@@ -38,6 +43,12 @@
               class="btn bg-dark text-white">
               {{ movie.name }}
             </a>
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'movies.hide' id=movie.id %}">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger mt-2" type="submit">Hide</button>
+            </form>
+            {% endif %}
           </div>
         </div>
       </div>
