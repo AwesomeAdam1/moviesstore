@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-8 mx-auto">
+        <h2>Create Movie Petition</h2>
+        <hr />
+        <p>
+          Request a movie to be added to our catalog. Provide as much information as possible to help others understand your request.
+        </p>
+        
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+        
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="movie_title" class="form-label">Movie Title *</label>
+            <input type="text" class="form-control" id="movie_title" name="movie_title" required>
+            <div class="form-text">The exact title of the movie you want to request.</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="movie_year" class="form-label">Release Year</label>
+            <input type="number" class="form-control" id="movie_year" name="movie_year" min="1900" max="2030">
+            <div class="form-text">The year the movie was released.</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="movie_director" class="form-label">Director</label>
+            <input type="text" class="form-control" id="movie_director" name="movie_director">
+            <div class="form-text">The director of the movie.</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="movie_description" class="form-label">Description</label>
+            <textarea class="form-control" id="movie_description" name="movie_description" rows="4"></textarea>
+            <div class="form-text">A brief description of the movie or why you think it should be added to our catalog.</div>
+          </div>
+          
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'movies.petitions' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create Petition</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

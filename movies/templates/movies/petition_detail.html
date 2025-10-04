@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h2>{{ template_data.petition.movie_title }}</h2>
+            {% if template_data.petition.movie_year %}
+              <p class="text-muted">{{ template_data.petition.movie_year }}</p>
+            {% endif %}
+          </div>
+          <span class="badge bg-{% if template_data.petition.status == 'approved' %}success{% elif template_data.petition.status == 'rejected' %}danger{% else %}warning{% endif %} fs-6">
+            {{ template_data.petition.get_status_display }}
+          </span>
+        </div>
+        <hr />
+        
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+        
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Movie Information</h5>
+                
+                {% if template_data.petition.movie_director %}
+                <p><strong>Director:</strong> {{ template_data.petition.movie_director }}</p>
+                {% endif %}
+                
+                {% if template_data.petition.movie_description %}
+                <p><strong>Description:</strong></p>
+                <p>{{ template_data.petition.movie_description }}</p>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <small class="text-muted">
+                      Created by <strong>{{ template_data.petition.created_by.username }}</strong> on {{ template_data.petition.created_at|date:"F d, Y" }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body text-center">
+                <h5 class="card-title">Voting</h5>
+                
+                <div class="mb-3">
+                  <div class="display-6 mb-2">
+                    <span class="badge bg-{% if template_data.vote_score >= 0 %}success{% else %}danger{% endif %} fs-3">
+                      {{ template_data.vote_score }}
+                    </span>
+                  </div>
+                  <p class="text-muted">Net Score</p>
+                </div>
+                
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <span class="badge bg-success fs-6">{{ template_data.upvotes }}</span>
+                    <p class="small text-muted mb-0">👍 Upvotes</p>
+                  </div>
+                  <div class="col-6">
+                    <span class="badge bg-danger fs-6">{{ template_data.downvotes }}</span>
+                    <p class="small text-muted mb-0">👎 Downvotes</p>
+                  </div>
+                </div>
+                
+                {% if user.is_authenticated %}
+                  <div class="d-grid gap-2">
+                    {% if template_data.user_vote %}
+                      {% if template_data.user_vote.vote_type == 'upvote' %}
+                        <button class="btn btn-success btn-sm" disabled>
+                          <i class="fas fa-thumbs-up"></i> You upvoted
+                        </button>
+                        <form method="POST" action="{% url 'movies.vote_petition' id=template_data.petition.id %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="vote_type" value="downvote">
+                          <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                            <i class="fas fa-thumbs-down"></i> Downvote
+                          </button>
+                        </form>
+                      {% else %}
+                        <form method="POST" action="{% url 'movies.vote_petition' id=template_data.petition.id %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="vote_type" value="upvote">
+                          <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                            <i class="fas fa-thumbs-up"></i> Upvote
+                          </button>
+                        </form>
+                        <button class="btn btn-danger btn-sm" disabled>
+                          <i class="fas fa-thumbs-down"></i> You downvoted
+                        </button>
+                      {% endif %}
+                      <form method="POST" action="{% url 'movies.vote_petition' id=template_data.petition.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="vote_type" value="{{ template_data.user_vote.vote_type }}">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+                          <i class="fas fa-times"></i> Remove Vote
+                        </button>
+                      </form>
+                    {% else %}
+                      <form method="POST" action="{% url 'movies.vote_petition' id=template_data.petition.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="vote_type" value="upvote">
+                        <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                          <i class="fas fa-thumbs-up"></i> Upvote
+                        </button>
+                      </form>
+                      <form method="POST" action="{% url 'movies.vote_petition' id=template_data.petition.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="vote_type" value="downvote">
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                          <i class="fas fa-thumbs-down"></i> Downvote
+                        </button>
+                      </form>
+                    {% endif %}
+                  </div>
+                {% else %}
+                  <p class="text-muted">Please <a href="{% url 'accounts.login' %}">login</a> to vote on this petition.</p>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="mt-3">
+              <a href="{% url 'movies.petitions' %}" class="btn btn-secondary w-100">
+                <i class="fas fa-arrow-left"></i> Back to Petitions
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
